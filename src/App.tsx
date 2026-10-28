@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { sendCommand, type Command } from "./lib/actions";
+import { BOT_USERNAME } from "./lib/config";
 import { countPending, courseById } from "./lib/model";
 import { hapticSelection, initTelegram } from "./lib/telegram";
 import type { Entry } from "./lib/types";
@@ -90,6 +91,8 @@ function Shell() {
   const payload = data.payload;
   const overdue = useMemo(() => (payload ? countPending(payload, now).overdue : 0), [payload, now]);
   const course = payload && courseId ? courseById(payload, courseId) : undefined;
+  const canCheck = payload?.features?.check !== false;
+  const bot = payload?.bot || BOT_USERNAME;
 
   let screen: React.ReactNode;
   if (data.status === "loading" || (data.status !== "ready" && data.refreshing && !payload)) {
@@ -102,7 +105,7 @@ function Shell() {
     screen = <SubjectsScreen payload={payload} onOpenCourse={(c) => setCourseId(c.id)} />;
   } else if (tab === "deadlines") {
     screen = <DeadlinesScreen payload={payload} now={now} onOpen={openEntry} />;
-  } else if (tab === "check") {
+  } else if (tab === "check" && canCheck) {
     screen = <CheckScreen payload={payload} now={now} onCommand={runCommand} />;
   } else {
     screen = (
@@ -117,6 +120,7 @@ function Shell() {
         onOpen={openEntry}
         onGoDeadlines={() => changeTab("deadlines")}
         onGoCheck={() => changeTab("check")}
+        canCheck={canCheck}
       />
     );
   }
@@ -125,13 +129,13 @@ function Shell() {
 
   return (
     <div className="min-h-dvh bg-ground pt-[var(--safe-top)] lg:mx-auto lg:flex lg:max-w-[1040px] lg:gap-8 lg:px-8 lg:pt-8">
-      <TabBar active={courseId ? "subjects" : tab} onChange={changeTab} overdue={overdue} semester={payload?.semester ?? ""} />
+      <TabBar active={courseId ? "subjects" : (tab === "check" && !canCheck ? "home" : tab)} onChange={changeTab} overdue={overdue} semester={payload?.semester ?? ""} showCheck={canCheck} />
       <main ref={main} className="pb-[calc(84px+var(--safe-bottom))] lg:min-w-0 lg:flex-1 lg:pb-16">
         {screen}
       </main>
       <Sheet open={sheet !== null} title={sheetTitle} onClose={closeSheet}>
         {sheet?.kind === "item" && <ItemSheet entry={sheet.entry} now={now} onGoCourse={goCourse} />}
-        {sheet?.kind === "command" && <CommandSheet command={sheet.command} onClose={closeSheet} />}
+        {sheet?.kind === "command" && <CommandSheet command={sheet.command} bot={bot} onClose={closeSheet} />}
       </Sheet>
     </div>
   );

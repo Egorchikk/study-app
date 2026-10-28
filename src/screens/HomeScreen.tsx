@@ -22,11 +22,12 @@ interface Props {
   onOpen(entry: Entry): void;
   onGoDeadlines(): void;
   onGoCheck(): void;
+  canCheck: boolean;
 }
 
 const UPCOMING_LIMIT = 6;
 
-export function HomeScreen({ payload, now, stale, error, refreshing, onReload, onCommand, onOpen, onGoDeadlines, onGoCheck }: Props) {
+export function HomeScreen({ payload, now, stale, error, refreshing, onReload, onCommand, onOpen, onGoDeadlines, onGoCheck, canCheck }: Props) {
   const [day, setDay] = useState<string | null>(null);
   const urgent = useMemo(() => urgentEntries(payload, now), [payload, now]);
   const upcoming = useMemo(() => upcomingEntries(payload, now), [payload, now]);
@@ -105,6 +106,7 @@ export function HomeScreen({ payload, now, stale, error, refreshing, onReload, o
           )}
         </Card>
 
+        {canCheck && (
         <Card>
           <CardHeader title="Загрузка в СДО" aside={payload.queue.length > 0 ? <span className="num text-[20px] font-semibold text-accent">{payload.queue.length}</span> : undefined}>
             {check ? `проверка ${formatStamp(check.at, now)}` : "проверка ещё не запускалась"}
@@ -127,6 +129,7 @@ export function HomeScreen({ payload, now, stale, error, refreshing, onReload, o
             )}
           </div>
         </Card>
+        )}
       </div>
     </div>
   );

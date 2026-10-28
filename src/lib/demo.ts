@@ -37,8 +37,12 @@ function course(id: string, short: string, name: string, items: Item[], folders:
   };
 }
 
-export function demoPayload(now = new Date()): Payload {
+export function demoPayload(now = new Date(), lite = false): Payload {
   const done = { submitted: true, status: "Отправлено для оценивания" };
+  if (lite) {
+    const full = demoPayload(now, false);
+    return { ...full, queue: [], queueAt: null, reports: {}, features: { check: false }, bot: "" };
+  }
   return {
     v: 1,
     generated: at(now, 0, now.getHours(), now.getMinutes()),

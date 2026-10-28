@@ -15,9 +15,11 @@ interface Props {
   onChange(tab: Tab): void;
   overdue: number;
   semester: string;
+  showCheck: boolean;
 }
 
-export function TabBar({ active, onChange, overdue, semester }: Props) {
+export function TabBar({ active, onChange, overdue, semester, showCheck }: Props) {
+  const tabs = TABS.filter((t) => showCheck || t.id !== "check");
   return (
     <nav aria-label="Разделы" className="fixed inset-x-0 bottom-0 z-20 bg-surface pb-[var(--safe-bottom)] lg:static lg:inset-auto lg:w-56 lg:self-start lg:rounded-[20px] lg:pb-3">
       <div className="hidden items-center gap-3 px-5 pt-5 pb-6 lg:flex">
@@ -28,7 +30,7 @@ export function TabBar({ active, onChange, overdue, semester }: Props) {
         </span>
       </div>
       <ul className="flex items-stretch justify-around px-2 lg:flex-col lg:gap-1 lg:px-3">
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const current = tab.id === active;
           return (
             <li key={tab.id} className="min-w-0 flex-1 lg:flex-none">

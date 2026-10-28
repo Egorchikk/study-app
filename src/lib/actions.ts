@@ -14,8 +14,8 @@ export const COMMAND_TEXT: Record<Command, string> = {
 
 export type SendResult = "sent" | "unsupported" | "outside";
 
-export function prefillLink(command: Command): string {
-  return `https://t.me/${BOT_USERNAME}?text=${encodeURIComponent(COMMAND_TEXT[command])}`;
+export function prefillLink(command: Command, bot = BOT_USERNAME): string {
+  return `https://t.me/${bot}?text=${encodeURIComponent(COMMAND_TEXT[command])}`;
 }
 
 export function sendCommand(command: Command, waitMs = 1500): Promise<SendResult> {
@@ -29,6 +29,7 @@ export function sendCommand(command: Command, waitMs = 1500): Promise<SendResult
   return new Promise((resolve) => setTimeout(() => resolve("unsupported"), waitMs));
 }
 
-export function openChatWith(command: Command): void {
-  openTelegramLink(prefillLink(command));
+export function openChatWith(command: Command, bot = BOT_USERNAME): void {
+  if (!bot) return;
+  openTelegramLink(prefillLink(command, bot));
 }

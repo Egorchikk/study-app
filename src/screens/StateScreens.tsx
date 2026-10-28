@@ -35,7 +35,7 @@ export function NoKeyScreen() {
       <Mark size={44} />
       <h1 className="mt-5 text-[28px] leading-[1.1] font-bold tracking-[-0.02em]">Учёба</h1>
       <p className="mt-3 text-[16px] leading-snug">Задания, тесты, сроки и материалы из СДО, собранные ботом.</p>
-      <p className="mt-2 text-[16px] leading-snug text-muted">Данные зашифрованы. Чтобы их увидеть, открой приложение из чата с ботом @{BOT_USERNAME} кнопкой «Учёба» под строкой ввода: вместе с ней приходит ключ.</p>
+      <p className="mt-2 text-[16px] leading-snug text-muted">Данные зашифрованы. Чтобы их увидеть, открой приложение из чата с {BOT_USERNAME ? `ботом @${BOT_USERNAME}` : "твоим ботом"} кнопкой «Учёба» под строкой ввода: вместе с ней приходит ключ.</p>
     </div>
   );
 }
@@ -47,7 +47,7 @@ export function ErrorScreen({ error, onRetry }: { error: string | null; onRetry(
       <Mark size={44} />
       <h1 className="mt-5 text-[28px] leading-[1.1] font-bold tracking-[-0.02em]">Учёба</h1>
       <p className="mt-3 text-[16px] leading-snug">{wrongKey ? "Ключ не подходит к данным." : "Не удалось загрузить данные."}</p>
-      <p className="mt-2 text-[16px] leading-snug text-muted">{wrongKey ? `Открой приложение заново из чата с ботом @${BOT_USERNAME}: кнопка «Учёба» принесёт актуальный ключ.` : "Проверь связь и попробуй ещё раз. Если бот ещё ни разу не публиковал данные, подожди ближайшую проверку СДО."}</p>
+      <p className="mt-2 text-[16px] leading-snug text-muted">{wrongKey ? `Открой приложение заново из чата с ${BOT_USERNAME ? `ботом @${BOT_USERNAME}` : "твоим ботом"}: кнопка «Учёба» принесёт актуальный ключ.` : "Проверь связь и попробуй ещё раз. Если бот ещё ни разу не публиковал данные, подожди ближайшую проверку СДО."}</p>
       <Button className="mt-5" onClick={onRetry}>
         Повторить
       </Button>

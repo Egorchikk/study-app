@@ -18,13 +18,17 @@ interface DataState {
 
 const DataContext = createContext<DataState | null>(null);
 
-function isDemo(): boolean {
-  if (typeof window === "undefined") return false;
-  return new URL(window.location.href).searchParams.get("demo") === "1";
+function demoMode(): "" | "full" | "lite" {
+  if (typeof window === "undefined") return "";
+  const value = new URL(window.location.href).searchParams.get("demo");
+  if (value === "1") return "full";
+  if (value === "lite") return "lite";
+  return "";
 }
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const demo = useMemo(isDemo, []);
+  const mode = useMemo(demoMode, []);
+  const demo = mode !== "";
   const [status, setStatus] = useState<Status>("loading");
   const [payload, setPayload] = useState<Payload | null>(null);
   const [stale, setStale] = useState(false);
@@ -34,7 +38,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const load = useCallback(async (initial: boolean) => {
     if (demo) {
-      setPayload(demoPayload());
+      setPayload(demoPayload(new Date(), mode === "lite"));
       setStatus("ready");
       return;
     }
@@ -67,7 +71,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     } finally {
       setRefreshing(false);
     }
-  }, [demo]);
+  }, [demo, mode]);
 
   useEffect(() => {
     void load(true);

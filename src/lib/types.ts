@@ -57,6 +57,8 @@ export interface Payload {
   queue: QueueEntry[];
   queueAt: string | null;
   reports: Partial<Record<"check" | "submit" | "draft", Report>>;
+  bot?: string;
+  features?: { check?: boolean };
 }
 
 export interface CourseRef {
