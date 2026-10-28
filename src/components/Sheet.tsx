@@ -74,7 +74,7 @@ export function Sheet({ open, title, onClose, children }: Props) {
 
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center lg:items-center">
-      <div ref={backdrop} className="absolute inset-0 bg-[#3a1f2b]/45" onClick={onClose} aria-hidden="true" />
+      <div ref={backdrop} className="absolute inset-0 bg-black/65" onClick={onClose} aria-hidden="true" />
       <div ref={panel} role="dialog" aria-modal="true" aria-labelledby="sheet-title" className="relative flex max-h-[92dvh] w-full flex-col rounded-t-[22px] bg-surface pb-[var(--safe-bottom)] lg:max-h-[86vh] lg:max-w-[520px] lg:rounded-[22px]">
         <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-2">
           <h2 id="sheet-title" className="text-[20px] leading-[1.25] font-semibold tracking-[-0.01em]">

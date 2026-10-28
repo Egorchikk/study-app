@@ -17,7 +17,7 @@ export function ItemRow({ entry, now, onOpen, showCourse = true }: Props) {
   return (
     <li>
       <button type="button" onClick={() => onOpen(entry)} className="pressable flex min-h-[60px] w-full items-center gap-3 px-5 py-2.5 text-left">
-        {showCourse ? <Tile code={entry.course.short} /> : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-tile text-accent"><Icon name={entry.kind === "quiz" ? "quiz" : "assign"} size={20} /></span>}
+        {showCourse ? <Tile code={entry.course.short} /> : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-tile text-tile-ink"><Icon name={entry.kind === "quiz" ? "quiz" : "assign"} size={20} /></span>}
         <span className="min-w-0 flex-1">
           <span className="line-clamp-2 block text-[16px] leading-snug font-medium">{entry.name}</span>
           <span className="block truncate text-[14px] leading-snug text-muted">{showCourse ? `${entry.course.short} · ${kind}` : kind}</span>

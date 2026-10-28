@@ -5,7 +5,7 @@ type Size = "md" | "sm";
 
 const variants: Record<Variant, string> = {
   primary: "bg-primary text-on-primary font-semibold",
-  secondary: "bg-tile text-accent font-semibold",
+  secondary: "bg-tile text-tile-ink font-semibold",
   ghost: "text-accent font-semibold",
   quiet: "bg-raised text-ink font-medium",
 };

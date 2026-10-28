@@ -91,7 +91,7 @@ function FolderRow({ material }: { material: Material }) {
           }}
           className="pressable flex min-h-[44px] min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-tile text-accent">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-tile text-tile-ink">
             <Icon name="folder" size={20} />
           </span>
           <span className="min-w-0 flex-1">
@@ -200,7 +200,7 @@ export function SubjectDetailScreen({ course, now, onOpen }: DetailProps) {
               {links.map((m) => (
                 <li key={m.id}>
                   <button type="button" onClick={() => openExternal(m.url)} className="pressable flex min-h-[60px] w-full items-center gap-3 px-5 py-2.5 text-left">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-tile text-accent">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-tile text-tile-ink">
                       <Icon name={m.type === "forum" ? "forum" : m.type === "url" ? "link" : "file"} size={20} />
                     </span>
                     <span className="min-w-0 flex-1">
