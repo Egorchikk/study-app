@@ -1,4 +1,5 @@
 import { formatScore, groupItems, resultTone, scoreRatio } from "../lib/brs";
+import { t } from "../lib/i18n";
 import { openExternal } from "../lib/telegram";
 import type { Brs, BrsItem } from "../lib/types";
 import { Card, CardHeader } from "./Card";
@@ -6,19 +7,14 @@ import { Icon } from "./Icon";
 import { Pill } from "./Pill";
 import { ThinBar } from "./ThinBar";
 
-const KIND_LABEL: Record<BrsItem["kind"], string> = {
-  assign: "задание",
-  quiz: "тест",
-  manual: "выставляет преподаватель",
-  calc: "считается автоматически",
-  other: "элемент курса",
-};
-
 export function ScoreOf({ score, max, size = "md" }: { score: number | null; max: number; size?: "md" | "lg" }) {
   return (
     <span className="num shrink-0 whitespace-nowrap text-muted">
       <span className={`font-semibold ${score === null ? "" : "text-ink"} ${size === "lg" ? "text-[22px]" : "text-[15px]"}`}>{formatScore(score)}</span>
-      <span className={size === "lg" ? "text-[14px]" : "text-[13px]"}> из {formatScore(max)}</span>
+      <span className={size === "lg" ? "text-[14px]" : "text-[13px]"}>
+        {" "}
+        {t().of} {formatScore(max)}
+      </span>
     </span>
   );
 }
@@ -28,7 +24,7 @@ function ItemLine({ item }: { item: BrsItem }) {
     <>
       <span className="min-w-0 flex-1">
         <span className="line-clamp-2 block text-[15px] leading-snug font-medium">{item.name}</span>
-        <span className="block text-[13px] leading-snug text-muted">{KIND_LABEL[item.kind]}</span>
+        <span className="block text-[13px] leading-snug text-muted">{t().brs.kinds[item.kind]}</span>
       </span>
       <ScoreOf score={item.score} max={item.max} />
     </>
@@ -48,19 +44,21 @@ function ItemLine({ item }: { item: BrsItem }) {
 
 export function BrsCard({ brs }: { brs: Brs }) {
   const groups = groupItems(brs.items);
+  const s = t().brs;
+  const of = t().of;
   return (
     <Card>
-      <CardHeader title="БРС" aside={brs.total ? <ScoreOf score={brs.total.score} max={brs.total.max} size="lg" /> : undefined}>
-        {brs.total ? brs.total.name : "Баллы из журнала оценок СДО"}
+      <CardHeader title={s.title} aside={brs.total ? <ScoreOf score={brs.total.score} max={brs.total.max} size="lg" /> : undefined}>
+        {brs.total ? brs.total.name : s.fromJournal}
       </CardHeader>
       {brs.total && (
         <div className="px-5 pt-2">
-          <ThinBar ratio={scoreRatio(brs.total)} label={`${brs.total.name}: ${formatScore(brs.total.score)} из ${formatScore(brs.total.max)}`} />
+          <ThinBar ratio={scoreRatio(brs.total)} label={`${brs.total.name}: ${formatScore(brs.total.score)} ${of} ${formatScore(brs.total.max)}`} />
         </div>
       )}
       {brs.result && (
         <p className="flex flex-wrap items-center gap-2 px-5 pt-3 text-[14px] leading-snug text-muted">
-          По текущей сумме в СДО
+          {s.result}
           <Pill tone={resultTone(brs.result)}>{brs.result}</Pill>
         </p>
       )}
@@ -72,7 +70,7 @@ export function BrsCard({ brs }: { brs: Brs }) {
                 <span className="text-[15px] leading-snug">{p.name}</span>
                 <ScoreOf score={p.score} max={p.max} />
               </div>
-              <ThinBar ratio={scoreRatio(p)} label={`${p.name}: ${formatScore(p.score)} из ${formatScore(p.max)}`} />
+              <ThinBar ratio={scoreRatio(p)} label={`${p.name}: ${formatScore(p.score)} ${of} ${formatScore(p.max)}`} />
             </li>
           ))}
         </ul>
@@ -81,7 +79,7 @@ export function BrsCard({ brs }: { brs: Brs }) {
         <div key={g.category || "other"}>
           <p className="flex items-center gap-1.5 px-5 pt-4 pb-1 text-[13px] font-semibold tracking-[0.02em] text-muted uppercase">
             <Icon name="assign" size={14} />
-            {g.category || "Другие работы"}
+            {g.category || s.other}
           </p>
           <ul className="divide-y divide-rule">
             {g.items.map((item, i) => (

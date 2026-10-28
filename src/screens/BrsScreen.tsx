@@ -1,5 +1,6 @@
 import { brsCourses, brsSummary, formatScore, isPassing, scoreRatio, shortPart } from "../lib/brs";
-import { formatStamp, plural } from "../lib/dates";
+import { formatStamp } from "../lib/dates";
+import { t } from "../lib/i18n";
 import type { Course, Payload } from "../lib/types";
 import { ScoreOf } from "../components/BrsCard";
 import { Card } from "../components/Card";
@@ -19,23 +20,21 @@ export function BrsScreen({ payload, now, onOpenCourse }: Props) {
   const shown = new Set(list.map((c) => c.id));
   const missing = payload.courses.filter((c) => !shown.has(c.id));
   const summary = brsSummary(payload);
+  const s = t().brs;
+  const of = t().of;
 
   return (
     <div>
       <ScreenTitle
-        title="БРС"
+        title={s.title}
         subline={
           <>
-            Журнал оценок СДО: <span className="num">{formatStamp(payload.updated, now)}</span>
+            {s.journal}: <span className="num">{formatStamp(payload.updated, now)}</span>
           </>
         }
       />
       <p className="px-5 pb-4 text-[16px] leading-snug lg:px-0">
-        {summary.courses === 0
-          ? "Баллов в журнале оценок пока нет: они появятся после ближайшей проверки СДО."
-          : summary.passed > 0
-            ? `По текущей сумме уже ${summary.passed === 1 ? "проходит" : "проходят"} ${summary.passed} ${plural(summary.passed, ["предмет", "предмета", "предметов"])} из ${summary.courses}. Нажми на предмет, чтобы увидеть, из чего сложились баллы.`
-            : `Баллы есть по ${summary.courses} ${plural(summary.courses, ["предмету", "предметам", "предметам"])}. Нажми на предмет, чтобы увидеть, из чего они сложились.`}
+        {summary.courses === 0 ? s.none : summary.passed > 0 ? s.passed(summary.passed, summary.courses) : s.some(summary.courses)}
       </p>
       {list.length > 0 && (
         <Card className="mx-4 lg:mx-0">
@@ -50,14 +49,14 @@ export function BrsScreen({ payload, now, onOpenCourse }: Props) {
                       <span className="min-w-0 flex-1">
                         <span className="line-clamp-2 block text-[16px] leading-snug font-medium">{c.name}</span>
                         <span className="mt-0.5 flex items-center gap-2 text-[14px] leading-snug text-muted">
-                          {isPassing(result) ? <Pill tone="positive">{result}</Pill> : total ? total.name.toLowerCase() : "баллы по разделам"}
+                          {isPassing(result) ? <Pill tone="positive">{result}</Pill> : total ? total.name.toLowerCase() : s.byParts}
                         </span>
                       </span>
                       {total ? <ScoreOf score={total.score} max={total.max} size="lg" /> : <span className="num shrink-0 text-[14px] text-muted">—</span>}
                     </span>
                     {total && (
                       <span className="mt-2.5 block pl-[56px]">
-                        <ThinBar ratio={scoreRatio(total)} label={`${c.name}: ${formatScore(total.score)} из ${formatScore(total.max)}`} />
+                        <ThinBar ratio={scoreRatio(total)} label={`${c.name}: ${formatScore(total.score)} ${of} ${formatScore(total.max)}`} />
                       </span>
                     )}
                     {parts.length > 0 && (
@@ -78,7 +77,7 @@ export function BrsScreen({ payload, now, onOpenCourse }: Props) {
       )}
       {missing.length > 0 && (
         <p className="px-5 pt-4 text-[14px] leading-snug text-muted lg:px-0">
-          Пока без баллов: {missing.map((c) => c.name).join(", ")}.
+          {s.missing(missing.map((c) => c.name).join(", "))}
         </p>
       )}
     </div>

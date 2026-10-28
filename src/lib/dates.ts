@@ -1,7 +1,6 @@
-export const MONTHS_GEN = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
-export const MONTHS_SHORT = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
-export const WEEKDAYS_SHORT = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
-export const WEEKDAYS_FULL = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"];
+import { t } from "./i18n";
+
+export { plural } from "./i18n";
 
 export function parseISO(value: string): Date {
   const m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2}))?)?/.exec(value);
@@ -43,8 +42,9 @@ export function formatTime(d: Date): string {
 }
 
 export function formatDay(d: Date, now: Date): string {
-  const base = `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
-  return d.getFullYear() === now.getFullYear() ? base : `${base} ${d.getFullYear()}`;
+  const s = t();
+  const base = s.dates.dayMonth(d.getDate(), d.getMonth());
+  return d.getFullYear() === now.getFullYear() ? base : s.dates.withYear(base, d.getFullYear());
 }
 
 export function formatDayTime(d: Date, now: Date): string {
@@ -52,42 +52,36 @@ export function formatDayTime(d: Date, now: Date): string {
 }
 
 export function formatLongDate(d: Date, now: Date): string {
-  const year = d.getFullYear() === now.getFullYear() ? "" : ` ${d.getFullYear()}`;
-  return `${WEEKDAYS_FULL[weekdayIndex(d)]}, ${d.getDate()} ${MONTHS_GEN[d.getMonth()]}${year}, ${formatTime(d)}`;
+  const s = t();
+  const base = s.dates.longDate(weekdayIndex(d), d.getDate(), d.getMonth());
+  return `${d.getFullYear() === now.getFullYear() ? base : s.dates.withYear(base, d.getFullYear())}, ${formatTime(d)}`;
 }
 
 export function formatStamp(iso: string | null | undefined, now: Date): string {
-  if (!iso) return "нет данных";
+  const s = t();
+  if (!iso) return s.dates.noData;
   const d = parseISO(iso);
-  if (Number.isNaN(d.getTime())) return "нет данных";
+  if (Number.isNaN(d.getTime())) return s.dates.noData;
   const diff = daysBetween(d, now);
-  if (diff === 0) return `сегодня, ${formatTime(d)}`;
-  if (diff === 1) return `вчера, ${formatTime(d)}`;
+  if (diff === 0) return s.dates.today(formatTime(d));
+  if (diff === 1) return s.dates.yesterday(formatTime(d));
   return formatDayTime(d, now);
 }
 
-export function plural(n: number, forms: [string, string, string]): string {
-  const abs = Math.abs(n) % 100;
-  const last = abs % 10;
-  if (abs > 10 && abs < 20) return forms[2];
-  if (last > 1 && last < 5) return forms[1];
-  if (last === 1) return forms[0];
-  return forms[2];
-}
-
 export function relativeDue(due: Date, now: Date): string {
+  const s = t();
   if (due.getTime() < now.getTime()) {
     const days = daysBetween(due, now);
-    if (days === 0) return "просрочено сегодня";
-    if (days === 1) return "просрочено вчера";
-    return `просрочено ${days} ${plural(days, ["день", "дня", "дней"])} назад`;
+    if (days === 0) return s.dates.overdueToday;
+    if (days === 1) return s.dates.overdueYesterday;
+    return s.dates.overdueAgo(days);
   }
   const days = daysBetween(now, due);
-  if (days === 0) return `сегодня до ${formatTime(due)}`;
-  if (days === 1) return `завтра до ${formatTime(due)}`;
-  return `через ${days} ${plural(days, ["день", "дня", "дней"])}`;
+  if (days === 0) return s.dates.todayUntil(formatTime(due));
+  if (days === 1) return s.dates.tomorrowUntil(formatTime(due));
+  return s.dates.inDays(days);
 }
 
 export function todayLine(now: Date): string {
-  return `${WEEKDAYS_FULL[weekdayIndex(now)]}, ${now.getDate()} ${MONTHS_GEN[now.getMonth()]}`;
+  return t().dates.longDate(weekdayIndex(now), now.getDate(), now.getMonth());
 }

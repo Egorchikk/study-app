@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import type { Command } from "../lib/actions";
-import { formatStamp, plural } from "../lib/dates";
-import { countPending, finding, stripDays, upcomingEntries, urgentEntries } from "../lib/model";
+import { formatStamp } from "../lib/dates";
+import { t } from "../lib/i18n";
+import { countPending, finding, getSoonDays, stripDays, upcomingEntries, urgentEntries } from "../lib/model";
 import type { Entry, Payload } from "../lib/types";
 import { Button } from "../components/Button";
 import { Card, CardHeader } from "../components/Card";
@@ -22,12 +23,16 @@ interface Props {
   onOpen(entry: Entry): void;
   onGoDeadlines(): void;
   onGoCheck(): void;
+  onSettings(): void;
   canCheck: boolean;
 }
 
 const UPCOMING_LIMIT = 6;
 
-export function HomeScreen({ payload, now, stale, error, refreshing, onReload, onCommand, onOpen, onGoDeadlines, onGoCheck, canCheck }: Props) {
+export function HomeScreen({ payload, now, stale, error, refreshing, onReload, onCommand, onOpen, onGoDeadlines, onGoCheck, onSettings, canCheck }: Props) {
+  const s = t();
+  const h = s.home;
+  const soon = getSoonDays();
   const [day, setDay] = useState<string | null>(null);
   const urgent = useMemo(() => urgentEntries(payload, now), [payload, now]);
   const upcoming = useMemo(() => upcomingEntries(payload, now), [payload, now]);
@@ -41,18 +46,23 @@ export function HomeScreen({ payload, now, stale, error, refreshing, onReload, o
   return (
     <div>
       <ScreenTitle
-        title="Учёба"
+        title={s.brand}
         subline={
           <>
-            СДО: <span className="num">{formatStamp(payload.updated, now)}</span>
-            {stale && " · из кэша"}
+            {h.sdo}: <span className="num">{formatStamp(payload.updated, now)}</span>
+            {stale && h.cached}
           </>
         }
         aside={
-          <Button variant="secondary" size="sm" onClick={() => onCommand("refresh")} aria-label="Обновить из СДО">
-            <Icon name="refresh" size={18} />
-            Обновить
-          </Button>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={onSettings} aria-label={s.tabs.settings} className="pressable flex h-9 w-9 items-center justify-center rounded-full bg-raised text-ink lg:hidden">
+              <Icon name="settings" size={18} />
+            </button>
+            <Button variant="secondary" size="sm" onClick={() => onCommand("refresh")} aria-label={h.refreshLabel}>
+              <Icon name="refresh" size={18} />
+              {h.refresh}
+            </Button>
+          </div>
         }
       />
 
@@ -60,17 +70,17 @@ export function HomeScreen({ payload, now, stale, error, refreshing, onReload, o
 
       {error && (
         <p className="mx-5 mb-4 flex flex-wrap items-center gap-x-2 rounded-[14px] bg-surface px-4 py-3 text-[14px] leading-snug text-muted lg:mx-0">
-          <span>Не удалось обновить данные{refreshing ? "" : `, показаны последние (${formatStamp(payload.updated, now)})`}.</span>
+          <span>{h.failed(refreshing ? null : formatStamp(payload.updated, now))}</span>
           <button type="button" onClick={onReload} className="pressable font-semibold text-accent">
-            Повторить
+            {s.retry}
           </button>
         </p>
       )}
 
       <div className="flex flex-col gap-4 px-4 lg:px-0">
         <Card>
-          <CardHeader title="Срочно" aside={<span className="num text-[20px] font-semibold text-accent">{urgent.length}</span>}>
-            {counts.overdue > 0 ? `${counts.overdue} просрочено · ${counts.soon} ${plural(counts.soon, ["горит", "горят", "горят"])} в ближайшие 3 дня` : "просроченного нет, ближайшие 3 дня"}
+          <CardHeader title={h.urgent} aside={<span className="num text-[20px] font-semibold text-accent">{urgent.length}</span>}>
+            {h.urgentLine(counts.overdue, counts.soon, soon)}
           </CardHeader>
           {urgent.length > 0 ? (
             <RowList className="pb-1">
@@ -79,13 +89,13 @@ export function HomeScreen({ payload, now, stale, error, refreshing, onReload, o
               ))}
             </RowList>
           ) : (
-            <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">Ничего не горит: все сроки дальше трёх дней.</p>
+            <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">{h.urgentEmpty(soon)}</p>
           )}
         </Card>
 
         <Card>
-          <CardHeader title="Две недели" aside={<span className="num text-[20px] font-semibold text-accent">{upcoming.length}</span>}>
-            {upcoming.length > 0 ? `${upcoming.length} ${plural(upcoming.length, ["срок", "срока", "сроков"])} с сегодняшнего дня` : "сроков на две недели вперёд нет"}
+          <CardHeader title={h.weeks} aside={<span className="num text-[20px] font-semibold text-accent">{upcoming.length}</span>}>
+            {h.weeksLine(upcoming.length)}
           </CardHeader>
           <DeadlineStrip days={days} selected={day} onSelect={setDay} />
           {shown.length > 0 ? (
@@ -95,12 +105,12 @@ export function HomeScreen({ payload, now, stale, error, refreshing, onReload, o
               ))}
             </RowList>
           ) : (
-            <p className="px-5 pt-2 pb-4 text-[16px] leading-snug text-muted">{selectedDay ? "В этот день сдавать нечего." : "Две недели свободны."}</p>
+            <p className="px-5 pt-2 pb-4 text-[16px] leading-snug text-muted">{selectedDay ? h.dayEmpty : h.weeksEmpty}</p>
           )}
           {hiddenCount > 0 && (
             <div className="px-5 pt-1 pb-4">
               <button type="button" onClick={onGoDeadlines} className="pressable text-[15px] font-semibold text-accent">
-                Ещё {hiddenCount} {plural(hiddenCount, ["срок", "срока", "сроков"])}, все сроки
+                {h.more(hiddenCount)}
               </button>
             </div>
           )}
@@ -108,23 +118,23 @@ export function HomeScreen({ payload, now, stale, error, refreshing, onReload, o
 
         {canCheck && (
         <Card>
-          <CardHeader title="Загрузка в СДО" aside={payload.queue.length > 0 ? <span className="num text-[20px] font-semibold text-accent">{payload.queue.length}</span> : undefined}>
-            {check ? `проверка ${formatStamp(check.at, now)}` : "проверка ещё не запускалась"}
+          <CardHeader title={h.upload} aside={payload.queue.length > 0 ? <span className="num text-[20px] font-semibold text-accent">{payload.queue.length}</span> : undefined}>
+            {check ? h.checkedAt(formatStamp(check.at, now)) : h.neverChecked}
           </CardHeader>
           <QueueList queue={payload.queue} queueAt={payload.queueAt} now={now} onCommand={onCommand} compact />
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-5 pb-5">
             {payload.queue.length > 0 ? (
               <button type="button" onClick={() => onCommand("check")} className="pressable text-[15px] font-semibold text-accent">
-                Проверить заново
+                {h.checkAgain}
               </button>
             ) : (
               <Button variant="secondary" onClick={() => onCommand("check")}>
-                Проверить и подгрузить
+                {s.commands.check}
               </Button>
             )}
             {check && (
               <button type="button" onClick={onGoCheck} className="pressable text-[15px] font-semibold text-accent">
-                Отчёт проверки
+                {h.report}
               </button>
             )}
           </div>

@@ -1,4 +1,4 @@
-import { statusOf } from "../lib/model";
+import { kindLabel, statusOf } from "../lib/model";
 import type { Entry } from "../lib/types";
 import { Icon } from "./Icon";
 import { Pill } from "./Pill";
@@ -13,7 +13,7 @@ interface Props {
 
 export function ItemRow({ entry, now, onOpen, showCourse = true }: Props) {
   const status = statusOf(entry, now);
-  const kind = entry.kind === "quiz" ? "тест" : "задание";
+  const kind = kindLabel(entry);
   return (
     <li>
       <button type="button" onClick={() => onOpen(entry)} className="pressable flex min-h-[60px] w-full items-center gap-3 px-5 py-2.5 text-left">

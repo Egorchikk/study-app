@@ -1,10 +1,11 @@
+import { t } from "./i18n";
 import type { Tone } from "./model";
 import type { Brs, BrsItem, BrsScore, Course, Payload } from "./types";
 
 export function formatScore(value: number | null): string {
   if (value === null) return "—";
   const rounded = Math.round(value * 10) / 10;
-  return (Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)).replace(".", ",");
+  return (Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)).replace(".", t().decimal);
 }
 
 export function scoreRatio(s: BrsScore): number {
@@ -38,14 +39,7 @@ export function isPassing(result: string): boolean {
 }
 
 export function shortPart(name: string): string {
-  const map: Record<string, string> = {
-    "Посещаемость": "Посещения",
-    "Текущий контроль": "Текущий",
-    "Семестровый контроль": "Семестровый",
-    "Достижения": "Достижения",
-    "Трудовая деятельность": "Труд",
-  };
-  return map[name] ?? name;
+  return t().brs.part(name);
 }
 
 export interface BrsGroup {

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { hasBrs } from "../lib/brs";
-import { plural } from "../lib/dates";
+import { t } from "../lib/i18n";
 import { courseProgress, isPending, materialsByKind, sortByDue } from "../lib/model";
 import { hapticSelection, openExternal } from "../lib/telegram";
 import type { Course, Entry, Material, Payload } from "../lib/types";
@@ -29,16 +29,18 @@ export function SubjectsScreen({ payload, onOpenCourse }: ListProps) {
     }
     return { done, total };
   }, [payload]);
+  const s = t().subjects;
+  const of = t().of;
 
   return (
     <div>
       <ScreenTitle
-        title="Предметы"
+        title={t().tabs.subjects}
         subline={
           <>
-            {payload.courses.length} {plural(payload.courses.length, ["предмет", "предмета", "предметов"])} · сдано{" "}
+            {s.count(payload.courses.length)} · {s.submitted}{" "}
             <span className="num font-semibold text-ink">
-              {totals.done} из {totals.total}
+              {totals.done} {of} {totals.total}
             </span>
           </>
         }
@@ -55,19 +57,19 @@ export function SubjectsScreen({ payload, onOpenCourse }: ListProps) {
                     <span className="min-w-0 flex-1">
                       <span className="line-clamp-2 block text-[16px] leading-snug font-medium">{c.name}</span>
                       <span className="block text-[14px] leading-snug text-muted">
-                        {p.total === 0 ? "заданий нет" : p.pending === 0 ? "всё сдано" : `${p.pending} ${plural(p.pending, ["не сдано", "не сдано", "не сдано"])}`}
+                        {p.total === 0 ? s.noItems : p.pending === 0 ? s.allDone : s.pending(p.pending)}
                       </span>
                     </span>
                     <span className="num shrink-0 text-[14px] text-muted">
                       {p.total === 0 ? "—" : (
                         <>
-                          <span className="font-semibold text-ink">{p.done}</span> из {p.total}
+                          <span className="font-semibold text-ink">{p.done}</span> {of} {p.total}
                         </>
                       )}
                     </span>
                   </span>
                   <span className="mt-2.5 block pl-[56px]">
-                    <ThinBar ratio={p.ratio} label={`${c.name}: сдано ${p.done} из ${p.total}`} />
+                    <ThinBar ratio={p.ratio} label={s.bar(c.name, p.done, p.total)} />
                   </span>
                 </button>
               </li>
@@ -81,6 +83,7 @@ export function SubjectsScreen({ payload, onOpenCourse }: ListProps) {
 
 function FolderRow({ material }: { material: Material }) {
   const [open, setOpen] = useState(false);
+  const s = t().subjects;
   return (
     <li>
       <div className="flex items-center gap-3 px-5 py-2.5">
@@ -98,11 +101,11 @@ function FolderRow({ material }: { material: Material }) {
           </span>
           <span className="min-w-0 flex-1">
             <span className="line-clamp-2 block text-[16px] leading-snug font-medium">{material.name}</span>
-            <span className="block text-[14px] leading-snug text-muted">{material.files.length === 0 ? "папка пуста" : `${material.files.length} ${plural(material.files.length, ["файл", "файла", "файлов"])}`}</span>
+            <span className="block text-[14px] leading-snug text-muted">{material.files.length === 0 ? s.folderEmpty : s.files(material.files.length)}</span>
           </span>
           <Icon name="chevron" size={18} className={`shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
-        <button type="button" onClick={() => openExternal(material.url)} aria-label={`Открыть папку «${material.name}» в СДО`} className="pressable flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-accent">
+        <button type="button" onClick={() => openExternal(material.url)} aria-label={s.openFolder(material.name)} className="pressable flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-accent">
           <Icon name="link" size={20} />
         </button>
       </div>
@@ -133,6 +136,8 @@ export function SubjectDetailScreen({ course, now, onOpen }: DetailProps) {
   const pending = sortByDue(entries.filter(isPending));
   const done = sortByDue(entries.filter((i) => i.submitted));
   const { folders, links } = materialsByKind(course);
+  const s = t().subjects;
+  const of = t().of;
 
   return (
     <div>
@@ -142,25 +147,25 @@ export function SubjectDetailScreen({ course, now, onOpen }: DetailProps) {
           <div className="min-w-0 flex-1">
             <h1 className="text-[22px] leading-[1.2] font-bold tracking-[-0.01em]">{course.name}</h1>
             <p className="mt-1 text-[16px] leading-snug text-muted">
-              {p.total === 0 ? "заданий и тестов нет" : (
+              {p.total === 0 ? s.noItemsOrQuizzes : (
                 <>
-                  сдано{" "}
+                  {s.submitted}{" "}
                   <span className="num font-semibold text-ink">
-                    {p.done} из {p.total}
+                    {p.done} {of} {p.total}
                   </span>
-                  {p.pending > 0 && `, не сдано ${p.pending}`}
+                  {p.pending > 0 && s.pendingTail(p.pending)}
                 </>
               )}
             </p>
           </div>
         </div>
         <div className="mt-3 pl-[60px]">
-          <ThinBar ratio={p.ratio} label={`Сдано ${p.done} из ${p.total}`} />
+          <ThinBar ratio={p.ratio} label={s.barCourse(p.done, p.total)} />
         </div>
         <div className="mt-4">
           <Button variant="secondary" size="sm" onClick={() => openExternal(course.url)}>
             <Icon name="link" size={16} />
-            Курс в СДО
+            {s.courseLink}
           </Button>
         </div>
       </header>
@@ -169,7 +174,7 @@ export function SubjectDetailScreen({ course, now, onOpen }: DetailProps) {
         {hasBrs(course) && <BrsCard brs={course.brs} />}
 
         <Card>
-          <CardHeader title="Не сдано" aside={<span className="num text-[20px] font-semibold text-accent">{pending.length}</span>} />
+          <CardHeader title={s.pendingTitle} aside={<span className="num text-[20px] font-semibold text-accent">{pending.length}</span>} />
           {pending.length > 0 ? (
             <RowList className="pb-1">
               {pending.map((e) => (
@@ -177,12 +182,12 @@ export function SubjectDetailScreen({ course, now, onOpen }: DetailProps) {
               ))}
             </RowList>
           ) : (
-            <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">По этому предмету всё сдано.</p>
+            <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">{s.pendingEmpty}</p>
           )}
         </Card>
 
         <Card>
-          <CardHeader title="Сдано" aside={<span className="num text-[20px] font-semibold text-accent">{done.length}</span>} />
+          <CardHeader title={s.doneTitle} aside={<span className="num text-[20px] font-semibold text-accent">{done.length}</span>} />
           {done.length > 0 ? (
             <RowList className="pb-1">
               {done.map((e) => (
@@ -190,12 +195,12 @@ export function SubjectDetailScreen({ course, now, onOpen }: DetailProps) {
               ))}
             </RowList>
           ) : (
-            <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">Сданных работ пока нет.</p>
+            <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">{s.doneEmpty}</p>
           )}
         </Card>
 
         <Card>
-          <CardHeader title="Материалы" aside={<span className="num text-[20px] font-semibold text-accent">{folders.length + links.length}</span>} />
+          <CardHeader title={s.materials} aside={<span className="num text-[20px] font-semibold text-accent">{folders.length + links.length}</span>} />
           {folders.length + links.length > 0 ? (
             <ul className="divide-y divide-rule pb-1">
               {folders.map((m) => (
@@ -209,7 +214,7 @@ export function SubjectDetailScreen({ course, now, onOpen }: DetailProps) {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="line-clamp-2 block text-[16px] leading-snug font-medium">{m.name}</span>
-                      <span className="block text-[14px] leading-snug text-muted">{m.typeLabel}</span>
+                      <span className="block text-[14px] leading-snug text-muted">{s.materialType(m.type, m.typeLabel)}</span>
                     </span>
                     <Icon name="forward" size={18} className="shrink-0 text-muted" />
                   </button>
@@ -217,7 +222,7 @@ export function SubjectDetailScreen({ course, now, onOpen }: DetailProps) {
               ))}
             </ul>
           ) : (
-            <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">Материалов в курсе нет.</p>
+            <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">{s.materialsEmpty}</p>
           )}
         </Card>
       </div>
