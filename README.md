@@ -27,3 +27,11 @@ scripts/install.sh # сборка, копия в ~/.local/share/study-app/site �
 ## Стек
 
 React 19, TypeScript, Vite, Tailwind CSS 4, GSAP, Telegram Mini Apps SDK; шрифт Manrope. Бот — `~/.claude/bin/study-bot.py` (python-stdlib, long polling).
+
+## Экраны (демо-данные)
+
+| Главная | Тёмная тема | Предмет |
+| --- | --- | --- |
+| ![Главная](docs/screens/home.png) | ![Тёмная тема](docs/screens/home-dark.png) | ![Предмет](docs/screens/subject.png) |
+
+![В браузере на компьютере](docs/screens/desktop.png)

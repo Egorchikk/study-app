@@ -4,12 +4,12 @@ import { hapticImpact, openTelegramLink, tg } from "./telegram";
 export type Command = "refresh" | "check" | "pending" | "up:submit" | "up:draft" | "up:no";
 
 export const COMMAND_TEXT: Record<Command, string> = {
-  refresh: "🔄 Обновить из СДО",
-  check: "🔍 Проверить и подгрузить",
-  pending: "📋 Всё несданное",
-  "up:submit": "📤 Загрузить и отправить",
-  "up:draft": "📝 Только черновик",
-  "up:no": "✖️ Не загружать",
+  refresh: "Обновить из СДО",
+  check: "Проверить и подгрузить",
+  pending: "Всё несданное",
+  "up:submit": "Загрузить и отправить",
+  "up:draft": "Только черновик",
+  "up:no": "Не загружать",
 };
 
 export type SendResult = "sent" | "unsupported" | "outside";
