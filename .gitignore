@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.deploy/
+.taste-skill/
+public/data/
+.env
+*.local
+__pycache__/
+*.pyc
+.DS_Store

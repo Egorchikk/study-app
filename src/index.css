@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-tile: var(--tile);
+  --color-active: var(--active);
+  --color-border: var(--border);
+  --color-rule: var(--rule);
+  --color-control: var(--control);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-negative: var(--negative);
+  --color-warning: var(--warning);
+  --color-positive: var(--positive);
+  --font-sans: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root {
+  --ground: #fbeff3;
+  --surface: #fffafc;
+  --raised: #f8e4ea;
+  --tile: #fbe3ea;
+  --active: #f6d8e2;
+  --border: #f1d3dd;
+  --rule: #f5e3e9;
+  --control: #e4b9c8;
+  --ink: #3a1f2b;
+  --muted: #80566a;
+  --accent: #a8305c;
+  --primary: #bf3f69;
+  --on-primary: #ffffff;
+  --negative: #8a1b3e;
+  --pill-negative-bg: #fde1e8;
+  --pill-negative-ink: #8a1b3e;
+  --warning: #7a3a12;
+  --pill-warning-bg: #fdeadb;
+  --pill-warning-ink: #7a3a12;
+  --positive: #2f6b4f;
+  --pill-positive-bg: #e1f1e8;
+  --pill-positive-ink: #1f5a3f;
+  --pill-neutral-bg: #f3e4ea;
+  --pill-neutral-ink: #5b3a4a;
+  --safe-top: max(env(safe-area-inset-top, 0px), calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px)));
+  --safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px));
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --ground: #1d1218;
+  --surface: #2a1b22;
+  --raised: #38242d;
+  --tile: #3b2531;
+  --active: #44303a;
+  --border: #46303a;
+  --rule: #3a2731;
+  --control: #6b4a58;
+  --ink: #fbeaf0;
+  --muted: #c9a3b2;
+  --accent: #f39bb9;
+  --primary: #f39bb9;
+  --on-primary: #2a0f1a;
+  --negative: #ffb3c6;
+  --pill-negative-bg: #4a1f2c;
+  --pill-negative-ink: #ffb3c6;
+  --warning: #ffc89a;
+  --pill-warning-bg: #4a2e1a;
+  --pill-warning-ink: #ffc89a;
+  --positive: #8fd4b0;
+  --pill-positive-bg: #1f3a2c;
+  --pill-positive-ink: #a8e3c4;
+  --pill-neutral-bg: #3a2630;
+  --pill-neutral-ink: #e7c6d2;
+  color-scheme: dark;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  html {
+    background: var(--ground);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 0;
+    touch-action: manipulation;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.scroll-area {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.scroll-area::-webkit-scrollbar {
+  display: none;
+}
+
+.pressable {
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease;
+}
+
+.pressable:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .pressable:hover {
+    opacity: 0.86;
+  }
+}
+
+.pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pill-negative {
+  background: var(--pill-negative-bg);
+  color: var(--pill-negative-ink);
+}
+
+.pill-warning {
+  background: var(--pill-warning-bg);
+  color: var(--pill-warning-ink);
+}
+
+.pill-positive {
+  background: var(--pill-positive-bg);
+  color: var(--pill-positive-ink);
+}
+
+.pill-neutral {
+  background: var(--pill-neutral-bg);
+  color: var(--pill-neutral-ink);
+}
+
+.pill-accent {
+  background: var(--tile);
+  color: var(--accent);
+}
+
+.skeleton {
+  background: var(--raised);
+  border-radius: 8px;
+}
+
+.report {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pressable,
+  .pressable:active {
+    transition: none;
+    transform: none;
+  }
+}
