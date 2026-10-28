@@ -96,7 +96,7 @@ export function demoPayload(now = new Date(), lite = false): Payload {
       ], [["Материалы", ["Unit 1.pdf", "Unit 2.pdf"]]]),
     ],
     queue: [
-      { course: "ТМП", name: "Практическое задание № 5", cmid: "1033", due: dayKey(addDays(now, 22)), files: ["ПР5 Комков.docx", "ПР5 расчёты.xlsx"], note: "форма откроется через 3 дня" },
+      { course: "ТМП", name: "Практическое задание № 5", cmid: "1033", due: dayKey(addDays(now, 22)), files: ["ПР5 Яппаров.docx", "ПР5 расчёты.xlsx"], note: "форма откроется через 3 дня" },
     ],
     queueAt: at(now, 0, 8, 55),
     reports: {

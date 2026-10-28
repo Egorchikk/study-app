@@ -26,12 +26,12 @@ export function CheckScreen({ payload, now, onCommand }: Props) {
 
   return (
     <div>
-      <ScreenTitle title="Проверка" subline={check ? <>Последняя проверка: <span className="num">{formatStamp(check.at, now)}</span></> : "Проверка СДО и GitHub ещё не запускалась"} />
+      <ScreenTitle title="Проверка" subline={check ? <>Последняя проверка: <span className="num">{formatStamp(check.at, now)}</span></> : "Проверка СДО ещё не запускалась"} />
       <div className="px-4 pb-4 lg:px-0">
         <Button className="w-full" onClick={() => onCommand("check")}>
           Проверить и подгрузить
         </Button>
-        <p className="mt-2 px-1 text-[14px] leading-snug text-muted">Сверит СДО с репозиториями на GitHub и соберёт очередь готовых работ. Займёт несколько минут, ответ придёт в чат.</p>
+        <p className="mt-2 px-1 text-[14px] leading-snug text-muted">Скачает новые файлы из СДО в папки предметов и соберёт очередь готовых работ из папок «К сдаче». Займёт несколько минут, ответ придёт в чат.</p>
       </div>
       <div className="flex flex-col gap-4 px-4 lg:px-0">
         <Card>

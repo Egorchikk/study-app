@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-OUT="${1:-$HOME/Desktop/mirea-sdo-bot/app}"
+OUT="${1:-$HOME/mirea-sdo-bot/app}"
 BASE_PATH=./ VITE_BOT_USERNAME= npm run build
 rm -rf "$OUT"
 mkdir -p "$OUT"
