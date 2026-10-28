@@ -100,6 +100,12 @@ export const features = {
   headerHex: atLeast("6.9"),
 };
 
+let hapticsOn = true;
+
+export function setHaptics(on: boolean): void {
+  hapticsOn = on;
+}
+
 export function initTelegram(): void {
   if (!tg) return;
   tg.ready();
@@ -108,15 +114,15 @@ export function initTelegram(): void {
 }
 
 export function hapticImpact(style: ImpactStyle = "light"): void {
-  if (tg && features.haptics) tg.HapticFeedback.impactOccurred(style);
+  if (tg && features.haptics && hapticsOn) tg.HapticFeedback.impactOccurred(style);
 }
 
 export function hapticNotify(type: NotificationType): void {
-  if (tg && features.haptics) tg.HapticFeedback.notificationOccurred(type);
+  if (tg && features.haptics && hapticsOn) tg.HapticFeedback.notificationOccurred(type);
 }
 
 export function hapticSelection(): void {
-  if (tg && features.haptics) tg.HapticFeedback.selectionChanged();
+  if (tg && features.haptics && hapticsOn) tg.HapticFeedback.selectionChanged();
 }
 
 export function openExternal(url: string): void {

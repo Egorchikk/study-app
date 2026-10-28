@@ -1,5 +1,6 @@
 import type { Command } from "../lib/actions";
 import { formatStamp } from "../lib/dates";
+import { t } from "../lib/i18n";
 import type { QueueEntry } from "../lib/types";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
@@ -13,8 +14,9 @@ interface Props {
 }
 
 export function QueueList({ queue, queueAt, now, onCommand }: Props) {
+  const s = t();
   if (queue.length === 0) {
-    return <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">Очередь пуста: всё готовое уже в СДО{queueAt ? ` (проверено ${formatStamp(queueAt, now)})` : ""}.</p>;
+    return <p className="px-5 pt-1 pb-4 text-[16px] leading-snug text-muted">{s.queue.empty(queueAt ? formatStamp(queueAt, now) : null)}</p>;
   }
   return (
     <div className="pb-4">
@@ -27,7 +29,7 @@ export function QueueList({ queue, queueAt, now, onCommand }: Props) {
             </p>
             <p className="mt-0.5 text-[14px] leading-snug text-muted">
               {q.files.join(", ")}
-              {q.due ? ` · срок ${q.due}` : ""}
+              {q.due ? s.queue.due(q.due) : ""}
             </p>
             {q.note && (
               <p className="mt-1 flex items-start gap-1.5 text-[14px] leading-snug text-warning">
@@ -39,12 +41,12 @@ export function QueueList({ queue, queueAt, now, onCommand }: Props) {
         ))}
       </ul>
       <div className="flex flex-wrap gap-2 px-5 pt-3">
-        <Button onClick={() => onCommand("up:submit")}>Загрузить и отправить</Button>
+        <Button onClick={() => onCommand("up:submit")}>{s.commands["up:submit"]}</Button>
         <Button variant="secondary" onClick={() => onCommand("up:draft")}>
-          Только черновик
+          {s.commands["up:draft"]}
         </Button>
         <Button variant="ghost" onClick={() => onCommand("up:no")}>
-          Не надо
+          {s.commands["up:no"]}
         </Button>
       </div>
     </div>

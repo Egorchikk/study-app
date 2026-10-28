@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { plural } from "../lib/dates";
+import { t } from "../lib/i18n";
 import { countPending, groupPending } from "../lib/model";
 import type { Entry, Payload } from "../lib/types";
 import { Card, CardHeader } from "../components/Card";
@@ -15,21 +15,22 @@ interface Props {
 export function DeadlinesScreen({ payload, now, onOpen }: Props) {
   const groups = useMemo(() => groupPending(payload, now), [payload, now]);
   const counts = useMemo(() => countPending(payload, now), [payload, now]);
+  const s = t().deadlines;
 
   return (
     <div>
       <ScreenTitle
-        title="Сроки"
+        title={t().tabs.deadlines}
         subline={
           counts.total === 0 ? (
-            "Всё сдано"
+            s.allDone
           ) : (
             <>
-              <span className="num font-semibold text-ink">{counts.total}</span> {plural(counts.total, ["работа не сдана", "работы не сданы", "работ не сдано"])}
+              <span className="num font-semibold text-ink">{counts.total}</span> {s.left(counts.total)}
               {counts.overdue > 0 && (
                 <>
                   {" · "}
-                  <span className="num font-semibold text-negative">{counts.overdue}</span> просрочено
+                  <span className="num font-semibold text-negative">{counts.overdue}</span> {s.overdue}
                 </>
               )}
             </>
@@ -39,7 +40,7 @@ export function DeadlinesScreen({ payload, now, onOpen }: Props) {
       <div className="flex flex-col gap-4 px-4 lg:px-0">
         {groups.length === 0 && (
           <Card>
-            <p className="px-5 py-5 text-[16px] leading-snug text-muted">Несданных заданий и тестов нет.</p>
+            <p className="px-5 py-5 text-[16px] leading-snug text-muted">{s.empty}</p>
           </Card>
         )}
         {groups.map((g) => (

@@ -1,4 +1,5 @@
 import type { StripDay } from "../lib/model";
+import { t } from "../lib/i18n";
 import { hapticSelection } from "../lib/telegram";
 
 interface Props {
@@ -8,12 +9,13 @@ interface Props {
 }
 
 export function DeadlineStrip({ days, selected, onSelect }: Props) {
+  const s = t().strip;
   return (
     <div className="px-3 pt-2 pb-1">
-      <ul className="grid grid-cols-7 gap-y-1" aria-label="Сроки по дням на две недели">
+      <ul className="grid grid-cols-7 gap-y-1" aria-label={s.label}>
         {days.map((d) => {
           const active = selected === d.key;
-          const label = `${d.day} ${d.weekday}${d.count ? `, ${d.count} к сдаче` : ""}`;
+          const label = `${d.day} ${d.weekday}${d.count ? `, ${s.due(d.count)}` : ""}`;
           return (
             <li key={d.key} className="flex justify-center">
               <button

@@ -29,6 +29,11 @@ export function sendCommand(command: Command, waitMs = 1500): Promise<SendResult
   return new Promise((resolve) => setTimeout(() => resolve("unsupported"), waitMs));
 }
 
+export function openBotSettings(bot = BOT_USERNAME): void {
+  if (!bot) return;
+  openTelegramLink(`https://t.me/${bot}?text=${encodeURIComponent("/settings")}`);
+}
+
 export function openChatWith(command: Command, bot = BOT_USERNAME): void {
   if (!bot) return;
   openTelegramLink(prefillLink(command, bot));

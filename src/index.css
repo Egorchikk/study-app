@@ -22,20 +22,22 @@
 }
 
 :root {
+  --h: 357;
+  --hn: 338;
   --ground: #000000;
-  --surface: #141114;
-  --raised: #221a20;
-  --tile: #ffd3e1;
-  --tile-ink: #3a1f2b;
-  --active: #2c2229;
-  --border: #2c2329;
-  --rule: #241c21;
-  --control: #5a4552;
-  --ink: #fff0f5;
-  --muted: #c9a8b8;
-  --accent: #ffb6cc;
-  --primary: #ffc2d4;
-  --on-primary: #3a1f2b;
+  --surface: oklch(0.183 0.008 var(--hn));
+  --raised: oklch(0.23 0.017 var(--hn));
+  --tile: oklch(0.908 0.052 var(--h));
+  --tile-ink: oklch(0.28 0.046 var(--h));
+  --active: oklch(0.266 0.02 var(--hn));
+  --border: oklch(0.269 0.017 var(--hn));
+  --rule: oklch(0.238 0.015 var(--hn));
+  --control: oklch(0.417 0.035 var(--hn));
+  --ink: oklch(0.968 0.017 var(--h));
+  --muted: oklch(0.766 0.044 var(--hn));
+  --accent: oklch(0.85 0.089 var(--h));
+  --primary: oklch(0.874 0.073 var(--h));
+  --on-primary: oklch(0.28 0.046 var(--h));
   --negative: #ff9db7;
   --pill-negative-bg: #3d1b27;
   --pill-negative-ink: #ffb3c6;
@@ -45,11 +47,71 @@
   --positive: #9fe0c0;
   --pill-positive-bg: #17302a;
   --pill-positive-ink: #a8e6c8;
-  --pill-neutral-bg: #2c2229;
-  --pill-neutral-ink: #e9cdd9;
+  --pill-neutral-bg: oklch(0.266 0.02 var(--hn));
+  --pill-neutral-ink: oklch(0.875 0.035 var(--h));
+  --backdrop: rgb(0 0 0 / 0.65);
   --safe-top: max(env(safe-area-inset-top, 0px), calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px)));
   --safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px));
   color-scheme: dark;
+}
+
+[data-accent="pink"] {
+  --h: 357;
+  --hn: 338;
+}
+
+[data-accent="blue"] {
+  --h: 232;
+  --hn: 245;
+}
+
+[data-accent="mint"] {
+  --h: 168;
+  --hn: 178;
+}
+
+[data-accent="lilac"] {
+  --h: 302;
+  --hn: 300;
+}
+
+[data-accent="peach"] {
+  --h: 52;
+  --hn: 45;
+}
+
+:root[data-theme="light"] {
+  --ground: oklch(0.968 0.014 var(--hn));
+  --surface: #ffffff;
+  --raised: oklch(0.945 0.016 var(--hn));
+  --tile: oklch(0.93 0.038 var(--h));
+  --tile-ink: oklch(0.36 0.07 var(--h));
+  --active: oklch(0.935 0.028 var(--h));
+  --border: oklch(0.905 0.015 var(--hn));
+  --rule: oklch(0.94 0.01 var(--hn));
+  --control: oklch(0.72 0.03 var(--hn));
+  --ink: oklch(0.24 0.025 var(--hn));
+  --muted: oklch(0.5 0.035 var(--hn));
+  --accent: oklch(0.52 0.115 var(--h));
+  --primary: oklch(0.53 0.11 var(--h));
+  --on-primary: #ffffff;
+  --negative: oklch(0.55 0.17 15);
+  --pill-negative-bg: oklch(0.94 0.035 10);
+  --pill-negative-ink: oklch(0.47 0.15 15);
+  --warning: oklch(0.6 0.12 65);
+  --pill-warning-bg: oklch(0.95 0.045 75);
+  --pill-warning-ink: oklch(0.47 0.1 60);
+  --positive: oklch(0.55 0.1 160);
+  --pill-positive-bg: oklch(0.95 0.04 165);
+  --pill-positive-ink: oklch(0.44 0.09 165);
+  --pill-neutral-bg: oklch(0.945 0.016 var(--hn));
+  --pill-neutral-ink: oklch(0.42 0.03 var(--hn));
+  --backdrop: rgb(20 10 20 / 0.4);
+  color-scheme: light;
+}
+
+:root[data-size="large"] {
+  zoom: 1.12;
 }
 
 @layer base {
@@ -167,6 +229,10 @@
 .pill-accent {
   background: var(--tile);
   color: var(--tile-ink);
+}
+
+.swatch {
+  background: oklch(0.8 0.1 var(--h));
 }
 
 .skeleton {

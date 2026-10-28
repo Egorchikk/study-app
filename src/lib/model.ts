@@ -1,6 +1,17 @@
 import { SOON_DAYS, STRIP_DAYS } from "./config";
-import { addDays, dayKey, daysBetween, formatDay, formatTime, parseISO, plural, relativeDue, startOfDay, weekdayIndex } from "./dates";
+import { addDays, dayKey, daysBetween, formatDay, formatTime, parseISO, relativeDue, startOfDay, weekdayIndex } from "./dates";
+import { t } from "./i18n";
 import type { Course, Entry, Item, Payload } from "./types";
+
+let soonDays = SOON_DAYS;
+
+export function setSoonDays(days: number): void {
+  soonDays = days;
+}
+
+export function getSoonDays(): number {
+  return soonDays;
+}
 
 export type Urgency = "overdue" | "today" | "soon" | "week" | "later" | "nodate";
 export type Tone = "negative" | "warning" | "positive" | "neutral" | "accent";
@@ -32,7 +43,7 @@ export function urgencyOf(item: Item, now: Date): Urgency {
   if (due.getTime() < now.getTime()) return "overdue";
   const days = daysBetween(now, due);
   if (days <= 0) return "today";
-  if (days <= SOON_DAYS) return "soon";
+  if (days <= soonDays) return "soon";
   if (days <= 7) return "week";
   return "later";
 }
@@ -120,7 +131,7 @@ export function stripDays(entries: Entry[], now: Date, days = STRIP_DAYS): Strip
     const key = dayKey(date);
     const list = byDay.get(key) ?? [];
     const wd = weekdayIndex(date);
-    return { key, date, day: date.getDate(), weekday: ["пн", "вт", "ср", "чт", "пт", "сб", "вс"][wd], weekend: wd >= 5, today: i === 0, count: list.length, entries: list };
+    return { key, date, day: date.getDate(), weekday: t().dates.weekdaysShort[wd], weekend: wd >= 5, today: i === 0, count: list.length, entries: list };
   });
 }
 
@@ -158,23 +169,24 @@ export function countPending(payload: Payload, now: Date): Counts {
 }
 
 export function kindLabel(item: Item): string {
-  return item.kind === "quiz" ? "тест" : "задание";
+  return t().kinds[item.kind === "quiz" ? "quiz" : "assign"];
 }
 
 export function statusOf(item: Item, now: Date): { text: string; tone: Tone } {
+  const s = t().status;
   if (item.submitted) {
-    if (item.grade) return { text: `оценка ${item.grade}`, tone: "positive" };
-    return { text: "сдано", tone: "positive" };
+    if (item.grade) return { text: s.grade(item.grade), tone: "positive" };
+    return { text: s.submitted, tone: "positive" };
   }
   const opens = opensDate(item);
-  if (opens && opens.getTime() > now.getTime()) return { text: `откроется ${formatDay(opens, now)}`, tone: "neutral" };
+  if (opens && opens.getTime() > now.getTime()) return { text: s.opens(formatDay(opens, now)), tone: "neutral" };
   const due = dueDate(item);
-  if (!due) return { text: "без срока", tone: "neutral" };
+  if (!due) return { text: s.noDue, tone: "neutral" };
   const u = urgencyOf(item, now);
-  if (u === "overdue") return { text: "просрочено", tone: "negative" };
-  if (u === "today") return { text: `сегодня до ${formatTime(due)}`, tone: "warning" };
-  if (u === "soon") return { text: `до ${formatDay(due, now)}`, tone: "warning" };
-  return { text: `до ${formatDay(due, now)}`, tone: "neutral" };
+  if (u === "overdue") return { text: s.overdue, tone: "negative" };
+  if (u === "today") return { text: t().dates.todayUntil(formatTime(due)), tone: "warning" };
+  if (u === "soon") return { text: s.until(formatDay(due, now)), tone: "warning" };
+  return { text: s.until(formatDay(due, now)), tone: "neutral" };
 }
 
 export interface Group {
@@ -197,29 +209,31 @@ export function groupPending(payload: Payload, now: Date): Group[] {
     else if (u === "later") groups.later.push(e);
     else groups.nodate.push(e);
   }
+  const g = t().groups;
   const titles: [string, string][] = [
-    ["overdue", "Просрочено"],
-    ["soon", "Ближайшие три дня"],
-    ["week", "На этой неделе"],
-    ["later", "Позже"],
-    ["locked", "Ещё не открылись"],
-    ["nodate", "Без срока"],
+    ["overdue", g.overdue],
+    ["soon", g.soon(soonDays)],
+    ["week", g.week],
+    ["later", g.later],
+    ["locked", g.locked],
+    ["nodate", g.nodate],
   ];
   return titles.filter(([key]) => groups[key].length > 0).map(([key, title]) => ({ key, title, entries: groups[key] }));
 }
 
 export function finding(payload: Payload, now: Date): string {
+  const s = t().finding;
   const counts = countPending(payload, now);
-  if (counts.total === 0) return "Всё сдано.";
+  if (counts.total === 0) return s.allDone;
   const parts: string[] = [];
-  parts.push(`Не сдано ${counts.total} ${plural(counts.total, ["работа", "работы", "работ"])}`);
-  if (counts.overdue > 0) parts.push(`${counts.overdue} просрочено`);
+  parts.push(s.left(counts.total));
+  if (counts.overdue > 0) parts.push(s.overdue(counts.overdue));
   const head = parts.join(", ") + ".";
   const next = upcomingEntries(payload, now, 365)[0];
   if (!next) return head;
   const due = dueDate(next);
   if (!due) return head;
-  return `${head} Ближайший срок ${relativeDue(due, now)}: ${next.course.short}, ${next.name}.`;
+  return `${head} ${s.next(relativeDue(due, now), next.course.short, next.name)}`;
 }
 
 export function courseById(payload: Payload, id: string): Course | undefined {
