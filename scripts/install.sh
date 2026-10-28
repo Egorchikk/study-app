@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-npm run build
-SITE="$HOME/.local/share/study-app/site"
-mkdir -p "$(dirname "$SITE")"
-rm -rf "$SITE"
-cp -R dist "$SITE"
-rm -rf "$SITE/data"
-/usr/bin/python3 "$HOME/mirea-sdo-bot/app.py"
+bash scripts/build-friends.sh "$HOME/mirea-sdo-bot/app"
+/usr/bin/python3 "$HOME/mirea-sdo-bot/publish.py"

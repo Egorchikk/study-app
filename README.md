@@ -7,7 +7,7 @@
 ## Как это работает
 
 1. `~/mirea-sdo-bot/watch.py` раз в 30 минут читает СДО через Safari и сохраняет состояние в `~/.local/state/mirea-sdo-bot/watch.json`.
-2. `~/mirea-sdo-bot/app.py` собирает из состояния и папок «К сдаче» JSON для приложения, шифрует его (AES-256-CBC + HMAC-SHA256, ключ `APP_KEY` из `~/.config/mirea-sdo-bot.env`) и выкладывает вместе с собранным приложением (`~/.local/share/study-app/site`) в ветку `gh-pages` этого репозитория.
+2. `~/mirea-sdo-bot/publish.py` собирает из состояния, журнала оценок и папок «К сдаче» JSON для приложения, шифрует его (AES-256-CBC + HMAC-SHA256, ключ `APP_KEY` из `~/.config/mirea-sdo-bot.env`) и выкладывает вместе со сборкой из `~/mirea-sdo-bot/app` в ветку `gh-pages` этого репозитория.
 3. Приложение открывается из бота кнопкой «💗 Учёба» под клавиатурой: ссылка несёт ключ, приложение запоминает его в CloudStorage Telegram и расшифровывает данные в браузере.
 4. Кнопки «Обновить из СДО», «Проверить и подгрузить», «Загрузить и отправить» отправляют боту команду через `sendData`, бот выполняет её и отвечает в чат.
 
@@ -19,12 +19,12 @@
 npm install
 npm run dev        # http://localhost:5173/study-app/?demo=1 — демо-данные
 npm test
-scripts/install.sh # сборка, копия в ~/.local/share/study-app/site и публикация
+scripts/install.sh # сборка в ~/mirea-sdo-bot/app (как для копий бота) и публикация
 ```
 
 Первый раз после создания репозитория: `scripts/publish.sh` делает репозиторий публичным и включает GitHub Pages из ветки `gh-pages`.
 
-Для проверки на реальных данных локально: `python3 ~/mirea-sdo-bot/app.py --out public/data/state.json`, затем открыть `http://localhost:5173/study-app/?k=<APP_KEY>`.
+Для проверки на реальных данных локально: `python3 ~/mirea-sdo-bot/publish.py --out public/data/state.json`, затем открыть `http://localhost:5173/study-app/?k=<APP_KEY>`.
 
 ## Стек
 
