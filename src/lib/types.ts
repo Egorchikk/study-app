@@ -77,6 +77,13 @@ export interface Account {
   checked: string | null;
 }
 
+export interface Subscription {
+  id: string;
+  name: string;
+  until: string;
+  price: number;
+}
+
 export interface Payload {
   v: number;
   generated: string;
@@ -89,9 +96,10 @@ export interface Payload {
   queueAt: string | null;
   reports: Partial<Record<"check" | "submit" | "draft", Report>>;
   bot?: string;
-  features?: { check?: boolean; account?: boolean; upload?: boolean };
+  features?: { check?: boolean; account?: boolean; upload?: boolean; subs?: boolean };
   account?: Account;
   settings?: { hideControl?: boolean };
+  subs?: Subscription[];
 }
 
 export interface CourseRef {

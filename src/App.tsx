@@ -21,6 +21,7 @@ import { ProfileScreen } from "./screens/ProfileScreen";
 import { ItemSheet } from "./screens/ItemSheet";
 import { ErrorScreen, LoadingScreen, NoKeyScreen } from "./screens/StateScreens";
 import { SubjectDetailScreen, SubjectsScreen } from "./screens/SubjectsScreen";
+import { SubsScreen } from "./screens/SubsScreen";
 
 gsap.registerPlugin(useGSAP);
 
@@ -94,6 +95,7 @@ function Shell() {
   const overdue = useMemo(() => (payload ? countPending(payload, now).overdue : 0), [payload, now]);
   const course = payload && courseId ? courseById(payload, courseId) : undefined;
   const canCheck = payload?.features?.check !== false;
+  const canSubs = payload?.features?.subs === true;
   const bot = payload?.bot || BOT_USERNAME;
 
   let screen: React.ReactNode;
@@ -111,6 +113,8 @@ function Shell() {
     screen = <DeadlinesScreen payload={payload} now={now} onOpen={openEntry} />;
   } else if (tab === "profile" && payload.account) {
     screen = <ProfileScreen account={payload.account} bot={bot} now={now} hideControl={payload.settings?.hideControl === true} onSettingsChanged={data.reload} />;
+  } else if (tab === "subs" && canSubs) {
+    screen = <SubsScreen subs={payload.subs ?? []} now={now} onChanged={data.reload} />;
   } else if (tab === "check" && canCheck) {
     screen = <CheckScreen payload={payload} now={now} onCommand={runCommand} />;
   } else {
@@ -135,7 +139,7 @@ function Shell() {
 
   return (
     <div className="min-h-dvh bg-ground pt-[var(--safe-top)] lg:mx-auto lg:flex lg:max-w-[1040px] lg:gap-8 lg:px-8 lg:pt-8">
-      <TabBar active={courseId && tab !== "brs" ? "subjects" : (tab === "check" && !canCheck ? "home" : tab)} onChange={changeTab} overdue={overdue} semester={payload?.semester ?? ""} showCheck={canCheck} showProfile={Boolean(payload?.account)} />
+      <TabBar active={courseId && tab !== "brs" ? "subjects" : ((tab === "check" && !canCheck) || (tab === "subs" && !canSubs) ? "home" : tab)} onChange={changeTab} overdue={overdue} semester={payload?.semester ?? ""} showCheck={canCheck} showSubs={canSubs} showProfile={Boolean(payload?.account)} />
       <main ref={main} className="pb-[calc(84px+var(--safe-bottom))] lg:min-w-0 lg:flex-1 lg:pb-16">
         {screen}
       </main>

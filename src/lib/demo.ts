@@ -55,7 +55,13 @@ export function demoPayload(now = new Date(), lite = false): Payload {
   if (lite) {
     const full = demoPayload(now, false);
     const account = { name: "Иванов Иван Иванович", email: "ivanov.i.i@edu.mirea.ru", login: "ivanov.i.i@edu.mirea.ru", telegram: "@ivanov", since: at(now, -3, 14, 10), checked: at(now, 0, 8, 51) };
-    return { ...full, queue: [], queueAt: null, reports: {}, features: { check: false, account: true, upload: true }, bot: "", account, settings: { hideControl: false } };
+    const subs = [
+      { id: "s1", name: "Яндекс Плюс", until: at(now, 2).slice(0, 10), price: 399 },
+      { id: "s2", name: "Telegram Premium", until: at(now, 41).slice(0, 10), price: 299 },
+      { id: "s3", name: "ChatGPT Plus", until: at(now, 17).slice(0, 10), price: 1990 },
+      { id: "s4", name: "Кинопоиск", until: at(now, -6).slice(0, 10), price: 269.9 },
+    ];
+    return { ...full, queue: [], queueAt: null, reports: {}, features: { check: false, account: true, upload: true, subs: true }, bot: "", account, settings: { hideControl: false }, subs };
   }
   return {
     v: 1,

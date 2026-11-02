@@ -1,4 +1,4 @@
-export type IconName = "home" | "subjects" | "deadlines" | "check" | "back" | "forward" | "close" | "link" | "refresh" | "folder" | "file" | "quiz" | "assign" | "lock" | "done" | "chevron" | "forum" | "warn" | "brs" | "profile";
+export type IconName = "home" | "subjects" | "deadlines" | "check" | "back" | "forward" | "close" | "link" | "refresh" | "folder" | "file" | "quiz" | "assign" | "lock" | "done" | "chevron" | "forum" | "warn" | "brs" | "profile" | "subs" | "plus";
 
 const paths: Record<IconName, string> = {
   home: "M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1v-7.5Z",
@@ -21,6 +21,8 @@ const paths: Record<IconName, string> = {
   warn: "M12 5 20 19H4L12 5ZM12 10v4M12 16.5v.5",
   brs: "M4 19.5h16M7 16.5v-4M12 16.5V7.5M17 16.5v-7",
   profile: "M12 12a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5ZM5 19.5a7 7 0 0 1 14 0",
+  subs: "M5.5 6h13a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16.5v-9A1.5 1.5 0 0 1 5.5 6ZM4 10h16M7.5 14.5h3",
+  plus: "M12 5.5v13M5.5 12h13",
 };
 
 export function Icon({ name, size = 20, className = "" }: { name: IconName; size?: number; className?: string }) {
